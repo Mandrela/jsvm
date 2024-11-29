@@ -1,40 +1,80 @@
+const readline = require("readline/promises");
+const rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout
+});
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 /*
 Every memory cell contains one byte e.g. in number in range 0-255
 */
 
-const reg_size = 1; // 8 bit
 //registers
-const CC = 0 * reg_size; // current command
-const IP = 1 * reg_size;
-const SP = 2 * reg_size;
-const Flags = 3 * reg_size;
-const reg_amount = 4;
+const IP = 0;
+const SP = 1;
+const Flags = 2;
+const reg_amount = 3;
 
-const ram_size = 1024; // bytes
-const disk_size = 8192; // bytes
-const memory_length = reg_amount * reg_size + ram_size;
+const ram_size = 1024;
+const disk_size = 8192;
+const memory_length = reg_amount + ram_size;
 var memory = new Array(memory_length);
 
-memory[IP] = reg_amount * reg_size;
+memory[IP] = reg_amount;
 memory[SP] = 0;
 memory[Flags] = 0;
 
-memory[memory[IP]] = 255;
+memory[memory[IP]] = 85;
+memory[memory[IP] + 1] = reg_amount + ram_size - 2;
+memory[memory[IP] + 2] = reg_amount + ram_size - 1;
+memory[memory[IP] + 3] = 1;
+memory[memory[IP] + 4] = 500;
+memory[memory[IP] + 5] = 22;
+memory[memory[IP] + 6] = reg_amount;
 
 /*
 Machine codes (hex view)
-FF - print("a liar!")
+01 - STALL V - wait for V ms
+16 - JMP A - jump to A
+55 - MV A1 A2 - write from A1 to A2
 */
 
-// CPU cycle
-while (memory[IP] < memory_length) {
-	for (let i = 0; i < reg_size; i++) {
-		memory[CC + i] = memory[memory[IP] + i];
+async function simple_terminal() {
+	while (true) {
+		console.log(memory[reg_amount + ram_size - 1]);
+		memory[reg_amount + ram_size - 2] = parseInt(await rl.question('>>> '));
+		await sleep(500);
 	}
-	memory[IP] += reg_size;
-	switch (memory[CC]) {
-		case 255: {
-			console.log("am I ;]")
+}
+
+async function main() {
+	simple_terminal();
+	// CPU cycle
+	while (memory[IP] < memory_length) {
+		let command = memory[memory[IP]];
+		memory[IP] += 1;
+		switch (command) {
+			case 1: {
+				await sleep(memory[memory[IP]]);
+				memory[IP] += 1;
+				break;
+			}
+			case 22: {
+				memory[IP] = memory[memory[IP]];
+				break;
+			}
+			case 85: {
+				memory[memory[memory[IP] + 1]] = memory[memory[memory[IP]]];
+				memory[IP] += 2;
+				break;
+			}
 		}
 	}
 }
+
+main();

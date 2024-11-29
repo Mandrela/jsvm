@@ -1,3 +1,10 @@
 basic model - done
-machine codes for 8 bit system
-MGN game
+machine codes era:
+	io - done
+	Interactive shell
+	ability to load .moc into memory
+	detect disk device
+	May Guess Number game
+	Calculator
+	compiler from .mal to .moc
+	interpreter from .mal to .moc
