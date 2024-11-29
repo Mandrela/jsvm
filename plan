@@ -1,3 +1,4 @@
+/*
 basic model - done
 machine codes era:
 	io - done
@@ -8,3 +9,6 @@ machine codes era:
 	Calculator
 	compiler from .mal to .moc
 	interpreter from .mal to .moc
+*/
+
+4-bit alu model with basic operations over binary numbers (+, -, <<, >>)
